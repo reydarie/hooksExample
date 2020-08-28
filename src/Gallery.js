@@ -1,31 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import PICTURES from "./data/pictures";
+import { useDinamicTransition } from "./hooks";
 
 const SECONDS = 1000;
+const minimumDelay = 1 ;
+const minimumIncrement = 1;
 
 function Gallery() {
-  const [index, setIndex] = useState(0);
-  const [delay, setDelay] = useState(3 * SECONDS);
+  const [delay, setDelay] = useState(3);
   const [increment, setIncrement] = useState(1);
 
-  useEffect(() => {
-    console.log("delay: ", delay);
-
-    const interval = setInterval(() => {
-      setIndex((storedIndex) => {
-        console.log("storedIndex:", storedIndex);
-        return (storedIndex + 1) % PICTURES.length;
-      });
-    }, delay);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
+  const index = useDinamicTransition({
+    delay: delay * SECONDS,
+    increment,
+    length: PICTURES.length,
+  });
 
   const updateDelay = (event) => {
-    setDelay(Number(event.target.value) * SECONDS);
+    const delay = Number(event.target.value);
+    setDelay(delay < minimumDelay ? minimumDelay : delay);
   };
+  const updateIncrement = (event) => {
+    const increment = Number(event.target.value);
+    setIncrement(increment < minimumIncrement ? minimumIncrement : increment);
+  };
+
+console.log('delay',delay, 'increment', increment);
 
   return (
     <div>
@@ -33,7 +33,11 @@ function Gallery() {
       <div className="multiform">
         <div>
           Gallery transition delay (seconds):
-          <input type="number" onRateChange={updateDelay} />
+          <input type="number" onChange={updateDelay} value={delay}/>
+        </div>
+        <div>
+          Gallery increment:
+          <input type="number" onChange={updateIncrement} value={increment}  />
         </div>
       </div>
     </div>
