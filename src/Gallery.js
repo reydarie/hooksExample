@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import PICTURES from "./data/pictures";
-import { useDinamicTransition } from "./hooks";
+import { useDynamicTransition } from "./hooks";
 
 const SECONDS = 1000;
 const minimumDelay = 1 ;
@@ -10,7 +10,7 @@ function Gallery() {
   const [delay, setDelay] = useState(3);
   const [increment, setIncrement] = useState(1);
 
-  const index = useDinamicTransition({
+  const index = useDynamicTransition({
     delay: delay * SECONDS,
     increment,
     length: PICTURES.length,

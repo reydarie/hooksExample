@@ -12,7 +12,7 @@ export const useFetch = (url, initialValue) => {
   return result;
 };
 
-export const useDinamicTransition = ({ delay, increment, length }) => {
+export const useDynamicTransition = ({ delay, increment, length }) => {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
