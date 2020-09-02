@@ -11,7 +11,7 @@ function App() {
 
   const handleChange = (event) => {
     setUserQuery(event.target.value);
-    console.log(userQuery);
+   
   };
 
   const seachQuery = () => {

@@ -25,7 +25,6 @@ function Gallery() {
     setIncrement(increment < minimumIncrement ? minimumIncrement : increment);
   };
 
-console.log('delay',delay, 'increment', increment);
 
   return (
     <div>

@@ -23,7 +23,6 @@ const index = useDynamicTransition({delay, increment, length: MATRIX_FRAMES.leng
          setIncrement(increment < minimumIncrement ? minimumIncrement : increment);
      }
 
-     console.log('matrix-delay', delay, 'increment-delay', increment)
 
   return (
     <div className= 'Matrix'>

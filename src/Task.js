@@ -1,5 +1,45 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import uuid from "uuid/v4";
+
+const initialTasksState = {
+  tasks: [],
+  completedTasks: [],
+};
+
+const tasksReducer = (state, action) => {
+  console.log("state", state, "action", action);
+
+  switch (action.type) {
+    case TYPES.ADD_TASK:
+      return {
+        ...state,
+        tasks: [...state.tasks, action.task],
+      };
+    case TYPES.COMPLETE_TASK:
+      const { completedTask } = action;
+
+      return {
+        ...state,
+        completedTasks: [...state.completedTasks, completedTask],
+        tasks: state.tasks.filter((t) => t.id !== completedTask.id),
+      };
+    case TYPES.DELETE_TASK:
+      return {
+        ...state,
+        completedTasks: state.completedTasks.filter(
+          (t) => t.id !== action.task.id
+        ),
+      };
+    default:
+      return state;
+  }
+};
+
+const TYPES = {
+  ADD_TASK: "ADD_TASK",
+  COMPLETE_TASK: "COMPLETE_TASK",
+  DELETE_TASK: "DELETE_TASK",
+};
 
 const TASK_STORAGE_KEY = "TASK_STORAGE_KEY";
 
@@ -9,17 +49,16 @@ const storeTasks = (taskMap) => {
 
 const restoredTasks = () => {
   const taskMap = JSON.parse(localStorage.getItem(TASK_STORAGE_KEY));
-  
-  return taskMap ? taskMap : { tasks: [], completedTasks: [] };
+
+  return taskMap ? taskMap : initialTasksState;
 };
 
 function Task() {
   const [taskText, setTaskText] = useState("");
   const storedTasks = restoredTasks();
-  const [tasks, setTasks] = useState(storedTasks.tasks);
-  const [completedTasks, setCompletedTasks] = useState(
-    storedTasks.completedTasks
-  );
+
+  const [state, dispatch] = useReducer(tasksReducer, storedTasks);
+  const { tasks, completedTasks } = state;
 
   useEffect(() => {
     storeTasks({ tasks, completedTasks });
@@ -30,16 +69,15 @@ function Task() {
   };
 
   const addTask = () => {
-    setTasks([...tasks, { taskText, id: uuid() }]);
+    dispatch({ type: TYPES.ADD_TASK, task: { taskText, id: uuid() } });
   };
 
   const completeTask = (task) => () => {
-    setCompletedTasks([...completedTasks, task]);
-    setTasks(tasks.filter((t) => t.id !== task.id));
+    dispatch({ type: TYPES.COMPLETE_TASK, completedTask: task });
   };
 
   const deleteTask = (task) => () => {
-    setCompletedTasks(completedTasks.filter((t) => t.id !== task.id));
+    dispatch({ type: TYPES.DELETE_TASK, task });
   };
 
   return (
@@ -52,7 +90,6 @@ function Task() {
       <div className="task-list">
         {tasks.map((task) => {
           const { id, taskText } = task;
-
           return (
             <div key={id} onClick={completeTask(task)}>
               {taskText}
